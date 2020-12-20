@@ -1,0 +1,21 @@
+// mixin
+@mixin RWD_676px {
+  @media (max-width: 676px) {
+    @content;
+  }
+}
+@mixin RWD_576px {
+  @media (max-width: 576px) {
+    @content;
+  }
+}
+@mixin RWD_499px {
+  @media (max-width: 499px) {
+    @content;
+  }
+}
+@mixin RWD_411px {
+  @media (max-width: 411px) {
+    @content;
+  }
+}
