@@ -13,6 +13,6 @@ git init
 git add -A
 git commit -m 'deploy'
 
-git push -f https://github.com/bobosun0713/test.git master:gh-pages
+git push -f https://github.com/bobosun0713/Side-Project__Spin-the-Wheel.git master:gh-pages
 
 cd -
