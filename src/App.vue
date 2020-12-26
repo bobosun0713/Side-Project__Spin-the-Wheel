@@ -43,7 +43,6 @@ export default {
       <div class="rouletteMsg">
         <span class="rouleMsg_span">恭喜獲得{{ MsgPrice }}元</span>
         <button class="rouleMsg_cancel" @click="closeMsg">關 閉</button>
-        <!-- <button class="rouleMsg_cancel" @click="closeMsg"></button> -->
       </div>
     </div>
   </div>
