@@ -1,5 +1,5 @@
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref, watch, watchEffect } from "vue";
 import db from "@/assets/db/data.json";
 import RouletteWrap from "@/components/RouletteWrap.vue";
 
@@ -8,27 +8,63 @@ export default {
     RouletteWrap,
   },
   setup() {
+    // 獲取資料 - 獎品內容
     const dbData = reactive([]);
     db.forEach((dblist) => {
       dbData.push(dblist);
     });
-    dbData.forEach((item, i) => {
-      item.deg = (360 / dbData.length) * (dbData.length - i);
-    });
 
+    // 獲獎訊息
     const OpMsg = ref(false);
-    const MsgPrice = ref(0);
+    const MsgPrice = ref("");
     const OpemMsg = (msg) => {
       OpMsg.value = msg.isOpen;
       MsgPrice.value = msg.price;
-      console.log(msg);
     };
 
+    // 關閉獲獎視窗
     const closeMsg = () => {
       OpMsg.value = false;
     };
 
-    return { dbData, OpemMsg, OpMsg, MsgPrice, closeMsg };
+    // 監控獎品長度，如果新增重新計算轉盤旋轉角度。
+    watchEffect(() => {
+      dbData.forEach((item, i) => {
+        item.deg = (360 / dbData.length) * (dbData.length - i);
+      });
+      // console.log("重新計算", dbData);
+    });
+
+    // 設定
+    const OpControl = ref(false);
+    const control = () => {
+      OpControl.value = !OpControl.value;
+    };
+
+    // 新增按鈕
+    const savaBtn = () => {
+      let idx = dbData.length + 1 + "";
+      dbData.push({ id: idx, price: 0 });
+      console.log(dbData);
+    };
+
+    // 刪除按鈕
+    const delBtn = (idx) => {
+      dbData.splice(idx, 1);
+      console.log(dbData);
+    };
+
+    return {
+      dbData,
+      OpemMsg,
+      OpMsg,
+      MsgPrice,
+      closeMsg,
+      control,
+      OpControl,
+      savaBtn,
+      delBtn,
+    };
   },
 };
 </script>
@@ -44,6 +80,19 @@ export default {
         <span class="rouleMsg_span">恭喜獲得{{ MsgPrice }}元</span>
         <button class="rouleMsg_cancel" @click="closeMsg">關 閉</button>
       </div>
+    </div>
+    <button class="control" @click="control">設定</button>
+    <div :class="['controlWrap', { 'controlWrap--active': OpControl }]">
+      <div class="controlWrap_item">
+        <ul>
+          <li v-for="(item, i) in dbData">
+            <span>獎品 {{ i + 1 }}</span>
+            <input type="text" v-model.trim="item.price" />
+            <a href="javascript:;" @click="delBtn(i)">&#10007;</a>
+          </li>
+        </ul>
+      </div>
+      <button class="savebtn" @click="savaBtn">新 增</button>
     </div>
   </div>
 </template>
@@ -62,56 +111,177 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgb(65, 50, 50);
+  background-color: #0e171d;
   font-family: "微軟正黑體", "Microsoft JhengHei";
+}
+
+// 設定按鈕
+.control {
+  position: absolute;
+  right: 50px;
+  bottom: 50px;
+  outline: none;
+  background-color: #fff;
+  height: 50px;
+  width: 50px;
+  border-radius: 100%;
+  border: 0;
+  font-weight: bold;
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+// 設定窗口
+.controlWrap {
+  position: absolute;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(60deg, #313f49, #131e26);
+  box-shadow: 2px 0 10px rgb(165, 162, 162);
+  transition: left 0.5s;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  // RWD
+  @include RWD_499px {
+    width: 200px;
+  }
+
+  .controlWrap_item {
+    height: calc(100% - 100px);
+    overflow-y: scroll;
+  }
+
+  // scoll bar樣式
+  .controlWrap_item::-webkit-scrollbar {
+    width: 8px;
+    height: 50px;
+  }
+
+  .controlWrap_item::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+    list-style: none;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      background-color: #0e171d;
+      height: 40px;
+      margin-bottom: 10px;
+
+      // 編號
+      span {
+        border-left: 4px solid #ff9519;
+        display: inline-block;
+        width: calc(100% / 3);
+        color: #ff9519;
+        font-weight: bold;
+        line-height: 40px;
+      }
+
+      // 輸入框
+      input {
+        width: calc(100% / 3);
+        outline: none;
+        border: 0;
+        padding-left: 10px;
+        background-color: transparent;
+        color: #ff9519;
+        font-size: 1.125rem;
+      }
+
+      // 刪除案
+      a {
+        display: inline-block;
+        width: calc(100% / 3);
+        line-height: 40px;
+        text-decoration: none;
+        color: red;
+      }
+    }
+  }
+
+  // 新增
+  .savebtn {
+    outline: none;
+    width: 150px;
+    height: 50px;
+    border-radius: 50px;
+    border: 0;
+    margin: 0 auto 25px;
+
+    font-size: 1.25rem;
+    font-weight: bold;
+    background-color: #ff9519;
+    color: white;
+    cursor: pointer;
+  }
+}
+
+// 打開設定視窗
+.controlWrap--active {
+  left: 0;
 }
 
 // 轉盤背景
 .rouletteWrap {
   -webkit-tap-highlight-color: transparent;
-  margin-bottom: 60px;
-  width: 590px;
-  height: 590px;
+  box-sizing: border-box;
+  width: 605px;
+  height: 605px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url("~@/assets/image/RouletteGif1.gif") no-repeat center center;
+  background: url("~@/assets/image/Roulette.gif") no-repeat center center;
   background-size: cover;
   position: relative;
   overflow: hidden;
   transition: all 0.8s;
 
   @include RWD_676px {
-    width: 550px;
-    height: 550px;
+    width: 565px;
+    height: 565px;
   }
   @include RWD_576px {
-    width: 500px;
-    height: 500px;
+    width: 515px;
+    height: 515px;
   }
   @include RWD_499px {
-    width: 400px;
-    height: 400px;
+    width: 415px;
+    height: 415px;
   }
   @include RWD_411px {
-    width: 340px;
-    height: 340px;
+    width: 355px;
+    height: 355px;
   }
 }
 
 // 轉動背景
-.rouletteBG {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+// .rouletteBG {
+//   width: 100%;
+//   height: 100%;
+//   position: absolute;
+//   top: 0;
+//   left: 0;
 
-  z-index: 1;
-  background: url("~@/assets/image/RouletteGif2.gif") no-repeat center center;
-  background-size: cover;
-  display: none;
-}
+//   z-index: 1;
+//   background: url("~@/assets/image/RouletteGif2.gif") no-repeat center center;
+//   background-size: cover;
+//   display: none;
+// }
 
 // 中獎跳窗
 .rouletteMsgWrap {
@@ -128,11 +298,29 @@ export default {
   align-items: center;
 
   .rouletteMsg {
-    width: 650px;
-    height: 650px;
-    // background: url(../image/test04.png) no-repeat center center;
-    background-size: contain;
+    width: 600px;
+    height: 600px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 100%;
     position: relative;
+
+    // RWS
+    @include RWD_676px {
+      width: 565px;
+      height: 565px;
+    }
+    @include RWD_576px {
+      width: 515px;
+      height: 515px;
+    }
+    @include RWD_499px {
+      width: 415px;
+      height: 415px;
+    }
+    @include RWD_411px {
+      width: 355px;
+      height: 355px;
+    }
 
     // 文字顯示
     .rouleMsg_span {

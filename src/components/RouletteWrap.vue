@@ -37,7 +37,10 @@ export default {
       if (isClick.value) return;
       isClick.value = true;
 
-      let db_deg = props.db[rand(0, 7)].deg;
+      // 取得獎品長度-1
+      let idx = props.db.length - 1;
+      let db_deg = props.db[rand(0, idx)].deg;
+      // console.log(db_deg);
       degree.value += 2880 + db_deg - (degree.value % 360);
 
       timer = setTimeout(() => {
@@ -76,7 +79,7 @@ export default {
 
 <template>
   <div class="roulette_pointer" @click="clickhandler">
-    <span>點我抽獎</span>
+    <span>GO</span>
   </div>
   <div
     class="roulette_circle"
@@ -93,7 +96,7 @@ export default {
         class="roulette_circle_item_cir"
         :style="{ transform: Circle_Deg(index, 'item_circle') }"
       >
-        <span>${{ item.price }}</span>
+        <span>{{ item.price }}</span>
       </div>
     </div>
   </div>
@@ -106,35 +109,17 @@ export default {
   content: "";
   display: block;
   position: absolute;
-  width: 190px;
-  height: 190px;
+  width: 100px;
+  height: 130px;
   background: url(~@/assets/image/Roulette_pointer.svg) no-repeat center center;
-  top: 170px;
-
+  top: 45%;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -50%);
   z-index: 1;
   cursor: pointer;
 
-  @include RWD_676px {
-    width: 180px;
-    height: 180px;
-    top: 160px;
-  }
-  @include RWD_576px {
-    width: 160px;
-    height: 160px;
-    top: 145px;
-  }
   @include RWD_499px {
-    width: 140px;
-    height: 140px;
-    top: 110px;
-  }
-  @include RWD_411px {
-    width: 110px;
-    height: 110px;
-    top: 100px;
+    height: 80px;
   }
 
   // 文字
@@ -142,7 +127,7 @@ export default {
     display: inline-block;
     width: 70px;
     position: absolute;
-    bottom: 34px;
+    bottom: 30px;
     left: 0;
     right: 0;
     margin: 0 auto;
@@ -154,20 +139,8 @@ export default {
     line-height: 30px;
     color: #fff;
     text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.8),
-      0 0 20px rgba(246, 229, 141, 1), 0 0 30px rgba(246, 229, 141, 1),
-      0 0 40px rgba(246, 229, 141, 1);
-    animation: flashing 1s infinite;
-    @keyframes flashing {
-      0% {
-        opacity: 0;
-      }
-      50% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-      }
-    }
+      0 0 10px rgba(246, 229, 141, 1), 0 0 30px rgba(246, 229, 141, 1),
+      0 0 30px rgba(246, 229, 141, 1);
 
     @include RWD_676px {
       width: 70px;
@@ -182,11 +155,6 @@ export default {
       line-height: 23px;
     }
     @include RWD_499px {
-      width: 50px;
-      bottom: 25px;
-      font-size: 1.25rem;
-    }
-    @include RWD_411px {
       line-height: 18px;
       width: 40px;
       bottom: 18px;
@@ -220,8 +188,8 @@ export default {
 }
 
 .roulette_circle {
-  width: 505px;
-  height: 505px;
+  width: 500px;
+  height: 500px;
   position: relative;
   transition: transform 10s cubic-bezier(0.25, 0, 0, 1);
   overflow: hidden;
@@ -248,7 +216,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    width: 252.5px;
+    width: 250px;
     height: 100%;
     transform-origin: 100% 50%;
     overflow: hidden;
@@ -288,30 +256,29 @@ export default {
       //輪盤獎品
       span {
         position: absolute;
-        bottom: 30px;
-        right: 40px;
-        //   left: 0;
+        bottom: 35px;
+        right: 50px;
         font-size: 2rem;
         font-weight: bold;
         transform: rotate(-160deg);
         color: white;
 
         @include RWD_676px {
-          right: 35px;
+          right: 45px;
           bottom: 35px;
         }
         @include RWD_576px {
           font-size: 1.8rem;
-          right: 30px;
+          right: 35px;
         }
         @include RWD_499px {
           font-size: 1.5rem;
-          right: 25px;
+          right: 30px;
           bottom: 25px;
         }
         @include RWD_411px {
           font-size: 1.25rem;
-          right: 22.5px;
+          right: 25px;
           bottom: 20px;
         }
       }
