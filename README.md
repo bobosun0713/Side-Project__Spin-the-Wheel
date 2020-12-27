@@ -1,5 +1,5 @@
 # 轉盤(抽獎)
-> 預計需再增加、動態新增獎品的功能。
+> 增加、動態新增獎品的功能 109 / 12 / 28。
 
 ### Compiles and hot-reloads for development
 ```
