@@ -1,4 +1,6 @@
-# 轉盤(抽獎)
+# 需要更新 重構！！
+
+## 轉盤(抽獎)。
 > 增加、動態新增獎品的功能 109 / 12 / 28。
 
 ### Compiles and hot-reloads for development
